@@ -32,36 +32,33 @@ jobRoleSelector.addEventListener('change', function (e) {
     }
 });
 
+//Event listener for the t-shirt colors drop-downs
 shirtSelection.addEventListener('change', function (e) {
-    const colors = document.getElementById('color').options;
+    const colors = document.getElementById('color').options; //Stores all options from the color dropdown
 
+    //This function lets you declare what options you wish to have displayed by
+    //setting a start point point and end point. Everything else is hidden
+    function optionDisp(optionStart, optionEnd) {
+        displayToggle('#colors-js-puns', ''); //displays the div that contains to color choices
+
+        for (let i = 0; i < colors.length; i++) {
+            if (i >= optionStart && i <= optionEnd) {
+                colors[i].style.display = '';
+            } else {
+                colors[i].style.display = 'none';
+            }
+        }
+
+        colors[optionStart].selected = true; //forces selection of the first option argument
+    }
+
+    //Conditionals that check which T-Shirt theme is selected and runs to above function with the
+    //appropriate options needed to be displayed.
+    //If neither T-shirt design is selected from the drop down, the color drop-down is hidden again.
     if (e.target['value'] === 'js puns') {
-        displayToggle('#colors-js-puns', '');
-
-        colors[0].style.display = '';
-        colors[1].style.display = '';
-        colors[2].style.display = '';
-        colors[3].style.display = 'none';
-        colors[4].style.display = 'none';
-        colors[5].style.display = 'none';
-
-        colors[0].selected = true;
-
-
+        optionDisp(0, 2);
     } else if (e.target['value'] === 'heart js') {
-        displayToggle('#colors-js-puns', '');
-
-
-        colors[0].style.display = 'none';
-        colors[1].style.display = 'none';
-        colors[2].style.display = 'none';
-        colors[3].style.display = '';
-        colors[4].style.display = '';
-        colors[5].style.display = '';
-
-        colors[3].selected = true;
-
-
+        optionDisp(3, 5);
     } else if ((e.target['id'] === 'design') && (e.target.children[0])) {
         displayToggle('#colors-js-puns', 'none');
     }
