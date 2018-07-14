@@ -44,8 +44,10 @@ shirtSelection.addEventListener('change', function (e) {
         for (let i = 0; i < colors.length; i++) {
             if (i >= optionStart && i <= optionEnd) {
                 colors[i].style.display = '';
+                colors[i].disabled = false;
             } else {
                 colors[i].style.display = 'none';
+                colors[i].disabled = true; //prevents IE users from selecting options
             }
         }
 
