@@ -58,13 +58,6 @@ function paymentSectionIntial() {
     displayToggle('.paypal-msg', 'none');
     displayToggle('.bitcoin-msg', 'none');
     creditCardOption[1].selected = true;
-
-    // creditCardNumber['maxlength'] = '1';
-    // zipCode['maxlength'] = '10';
-    // creditCardNumber['maxlength'] = '16';
-    // cvv['maxlength'] = '5';
-
-
 }
 
 //Actions that take place when the window loads
@@ -85,7 +78,6 @@ jobRoleSelector.addEventListener('change', function (e) {
         displayToggle('#other-job-role', 'block');
     } else {
         displayToggle('#other-job-role', 'none');
-        return false;
     }
 });
 
@@ -218,6 +210,7 @@ form.addEventListener('submit', function (e) {
     let name = nameField.value;
     const emailField = document.querySelector('#mail');
     let email = emailField.value;
+    const paymentMethod = document.querySelectorAll('#payment > option');
 
 
     function validateActivities() {
@@ -269,7 +262,6 @@ form.addEventListener('submit', function (e) {
     }
 
     if (!validateActivities()) {
-        console.log('nothing');
 
         activitiesSelection.style.border = 'red 2px solid';
         activitiesSelection.style.backgroundColor = '#f75656';
@@ -281,23 +273,22 @@ form.addEventListener('submit', function (e) {
         e.preventDefault();
     }
 
-    if (isNan(zipCodeField.value)) {
-        preventDefault();
-    }
-});
-
-paymentSelection.addEventListener('keyup', function (e) {
-    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
-        if (isNaN(e.key)) {
-            e.target.value = '';
+    if (paymentMethod[1].selected) {
+        console.log('credit card');
+        if (isNaN(zipCodeField.value) || zipCodeField.value.length < 5) {
+            console.log('was wrong zip');
+            cursorFocus('#zip');
+            e.preventDefault();
         }
     }
+
 });
 
 paymentSelection.addEventListener('keyup', function (e) {
-    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
-        if (isNaN(e.key)) {
-            e.target.value = '';
+    let fieldValue = e.target.value;
+    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num') && (e.target['maxLength'] !== fieldValue.length)) {
+        if (isNaN(e.key) || (e.keyCode === 32)) {
+            e.target.value = fieldValue.slice(0, fieldValue.length - 1);
         }
     }
 });
