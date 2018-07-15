@@ -2,6 +2,7 @@
 const jobRoleSelector = document.getElementById('title'); //stores the Job Role Drop Down to a variable
 const shirtSelection = document.querySelector('.shirt');
 const activitiesSelection = document.querySelector('.activities');
+const paymentSelection = document.querySelector('#payment').parentElement;
 
 //Function that will change the cursor focus to specific argument
 function cursorFocus(field) {
@@ -39,14 +40,30 @@ function updateTotalCost(cost) {
     price.innerText = currentTotal + cost;
 }
 
+//Defaults for payment section are setup in this function.
+//Credit card is the default selected payment method.
+//Hides paypal and bitcoin messages and assign a classname for easier access
+function paymentSectionIntial() {
+    const creditCardOption = paymentSelection.querySelectorAll('#payment > option');
+    const payPalDiv = paymentSelection.querySelector('.credit-card').nextElementSibling;
+    const bitcoinDiv = paymentSelection.querySelector('.credit-card').nextElementSibling.nextElementSibling;
+
+    payPalDiv.className = 'paypal-msg';
+    bitcoinDiv.className = 'bitcoin-msg';
+    displayToggle('.paypal-msg', 'none');
+    displayToggle('.bitcoin-msg', 'none');
+    creditCardOption[1].selected = true;
+}
+
 //Actions that take place when the window loads
 //The hardcoded 'other job role' field is set to hide until needed
-//The curse is set to focus on the first input field of the page
+//The cursor is set to focus on the first input field of the page
 window.addEventListener('load', function () {
     displayToggle('#other-job-role', 'none');
     displayToggle('#colors-js-puns', 'none');
     createTotalCost();
     cursorFocus('#name');
+    paymentSectionIntial();
 });
 
 //Event listener for the 'job role' drop down that toggle whether the extra input field
@@ -161,3 +178,18 @@ activitiesSelection.addEventListener('change', function (e) {
 
 });
 
+paymentSelection.addEventListener('change', function (e) {
+    const paymentSelection = document.querySelector('#payment');
+
+    if (paymentSelection['value'] === 'paypal') {
+        displayToggle('.paypal-msg', '');
+        displayToggle('.bitcoin-msg', 'none');
+    } else if (paymentSelection['value'] === 'bitcoin') {
+        displayToggle('.bitcoin-msg', '');
+        displayToggle('.paypal-msg', 'none');
+    } else {
+        displayToggle('.paypal-msg', 'none');
+        displayToggle('.bitcoin-msg', 'none');
+        paymentSelection.children[1].selected = 'true';
+    }
+});
