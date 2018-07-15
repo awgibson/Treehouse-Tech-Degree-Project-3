@@ -3,6 +3,8 @@ const jobRoleSelector = document.getElementById('title'); //stores the Job Role 
 const shirtSelection = document.querySelector('.shirt');
 const activitiesSelection = document.querySelector('.activities');
 const paymentSelection = document.querySelector('#payment').parentElement;
+const zipCodeField = document.querySelector('#zip');
+const form = document.querySelector('FORM');
 
 //Function that will change the cursor focus to specific argument
 function cursorFocus(field) {
@@ -16,7 +18,6 @@ function displayToggle(element, dispValue) {
 
 //Creates elements to display the current price the customer will need to pay and calls the updateTotalCost function initially.
 function createTotalCost() {
-    const form = document.getElementsByTagName('FORM');
     const payment = document.querySelector('#payment').parentElement;
     const div = document.createElement('div');
     const p = document.createElement('p');
@@ -27,7 +28,7 @@ function createTotalCost() {
     p.appendChild(span);
     div.appendChild(p);
     div.className = 'total-wrapper';
-    form[0].insertBefore(div, payment);
+    form.insertBefore(div, payment);
 
     updateTotalCost(0);
 }
@@ -47,12 +48,23 @@ function paymentSectionIntial() {
     const creditCardOption = paymentSelection.querySelectorAll('#payment > option');
     const payPalDiv = paymentSelection.querySelector('.credit-card').nextElementSibling;
     const bitcoinDiv = paymentSelection.querySelector('.credit-card').nextElementSibling.nextElementSibling;
+    const zipCode = paymentSelection.querySelector('#zip');
+    const creditCardNumber = paymentSelection.querySelector('#cc-num');
+    const ccv = paymentSelection.querySelector('#cvv');
+
 
     payPalDiv.className = 'paypal-msg';
     bitcoinDiv.className = 'bitcoin-msg';
     displayToggle('.paypal-msg', 'none');
     displayToggle('.bitcoin-msg', 'none');
     creditCardOption[1].selected = true;
+
+    // creditCardNumber['maxlength'] = '1';
+    // zipCode['maxlength'] = '10';
+    // creditCardNumber['maxlength'] = '16';
+    // cvv['maxlength'] = '5';
+
+
 }
 
 //Actions that take place when the window loads
@@ -178,18 +190,115 @@ activitiesSelection.addEventListener('change', function (e) {
 
 });
 
+//Event Listener that toggles the DIVs containiner Paypal and Bitcoin info on and off depend
+//on what payment method is selected
 paymentSelection.addEventListener('change', function (e) {
     const paymentSelection = document.querySelector('#payment');
 
     if (paymentSelection['value'] === 'paypal') {
         displayToggle('.paypal-msg', '');
         displayToggle('.bitcoin-msg', 'none');
+        displayToggle('.credit-card', 'none');
     } else if (paymentSelection['value'] === 'bitcoin') {
         displayToggle('.bitcoin-msg', '');
         displayToggle('.paypal-msg', 'none');
-    } else {
+        displayToggle('.credit-card', 'none');
+    }
+    else {
         displayToggle('.paypal-msg', 'none');
         displayToggle('.bitcoin-msg', 'none');
+        displayToggle('.credit-card', '');
         paymentSelection.children[1].selected = 'true';
     }
 });
+
+//Handles submit and validation
+form.addEventListener('submit', function (e) {
+    const nameField = document.querySelector('#name')
+    let name = nameField.value;
+    const emailField = document.querySelector('#mail');
+    let email = emailField.value;
+
+
+    function validateActivities() {
+        const activities = document.querySelectorAll('.activities > label > input');
+        for (let i = 0; i < activities.length; i++) {
+            if (activities[i]['checked']) {
+                return true;
+                break;
+            }
+        }
+    }
+
+
+    if (name.length === 0) {
+        nameField.style.borderColor = 'red';
+        nameField.style.backgroundColor = '#f75656';
+        nameField['placeholder'] = 'Please enter your name to continue';
+        cursorFocus('#name');
+        nameField.addEventListener('keyup', function (evt) {
+            name = nameField.value;
+            if (name.length > 0) {
+                nameField.style.borderColor = '';
+                nameField.style.backgroundColor = '';
+                nameField.placeholder = '';
+
+            }
+        });
+        e.preventDefault();
+    }
+
+    if (email.length === 0) {
+        emailField.style.borderColor = 'red';
+        emailField.style.backgroundColor = '#f75656';
+        emailField['placeholder'] = 'Please enter your email to continue';
+        if (name.length !== 0) {
+            cursorFocus('#mail');
+        }
+        emailField.addEventListener('keyup', function (evt) {
+
+            email = emailField.value;
+            if (email.length > 0) {
+                emailField.style.borderColor = '';
+                emailField.style.backgroundColor = '';
+                emailField.placeholder = '';
+
+            }
+        });
+        e.preventDefault();
+    }
+
+    if (!validateActivities()) {
+        console.log('nothing');
+
+        activitiesSelection.style.border = 'red 2px solid';
+        activitiesSelection.style.backgroundColor = '#f75656';
+
+        activitiesSelection.addEventListener('change', function (evt) {
+            activitiesSelection.style.border = '';
+            activitiesSelection.style.backgroundColor = '';
+        });
+        e.preventDefault();
+    }
+
+    if (isNan(zipCodeField.value)) {
+        preventDefault();
+    }
+});
+
+paymentSelection.addEventListener('keyup', function (e) {
+    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
+        if (isNaN(e.key)) {
+            e.target.value = '';
+        }
+    }
+});
+
+paymentSelection.addEventListener('keyup', function (e) {
+    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
+        if (isNaN(e.key)) {
+            e.target.value = '';
+        }
+    }
+});
+

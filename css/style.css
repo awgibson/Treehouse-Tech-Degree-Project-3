@@ -96,6 +96,20 @@ input:focus {
 	transition: border-color .4s, background-color .4s;
 }
 
+input::placeholder
+{
+	opacity: 1;
+	color: black;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: black;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: black;
+}
+
 input[type="checkbox"],
 input[type="radio"] {
 	display: inline-block;
