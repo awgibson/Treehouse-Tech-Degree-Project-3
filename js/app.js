@@ -58,6 +58,9 @@ function paymentSectionIntial() {
     displayToggle('.paypal-msg', 'none');
     displayToggle('.bitcoin-msg', 'none');
     creditCardOption[1].selected = true;
+    creditCardNumber.maxLength = '16';
+    zipCode.maxLength = '5';
+    ccv.maxLength = '3';
 }
 
 //Actions that take place when the window loads
