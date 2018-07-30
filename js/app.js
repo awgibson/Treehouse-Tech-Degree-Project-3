@@ -63,6 +63,19 @@ function paymentSectionIntial() {
     ccv.maxLength = '3';
 }
 
+function createToolTips() {
+    const allInputs = document.querySelectorAll('INPUT');
+    const afterActivities = activitiesSelection.nextElementSibling;
+
+    for (let i = 0; i < allInputs.length; i++) {
+        if (allInputs[i]['type'] === 'text' || allInputs[i]['type'] === 'email') {
+            allInputs[i].insertAdjacentHTML('afterend', '<span class="tooltip">Test</span>');
+        }
+    }
+
+    afterActivities.insertAdjacentHTML('afterend', '<span class="tooltip">Test</span>');
+}
+
 //Actions that take place when the window loads
 //The hardcoded 'other job role' field is set to hide until needed
 //The cursor is set to focus on the first input field of the page
@@ -72,6 +85,7 @@ window.addEventListener('load', function () {
     createTotalCost();
     cursorFocus('#name');
     paymentSectionIntial();
+    createToolTips();
 });
 
 //Event listener for the 'job role' drop down that toggle whether the extra input field
