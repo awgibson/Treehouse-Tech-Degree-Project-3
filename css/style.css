@@ -127,6 +127,7 @@ button:hover {
 	background: #184c62;
 }
 
+
 /* ================================= 
   Page Styles
 ==================================== */
@@ -149,6 +150,13 @@ button:hover {
 	margin-top: 1.25em;
 }
 
+.error-blank,
+.error-blank:focus {
+	background: #f75656;
+	border-color: red;
+}
+
+
 /* ================================= 
   Helper Classes
 ==================================== */
@@ -162,6 +170,7 @@ button:hover {
   display: table;
   clear: both;
 }
+
 
 /* ================================= 
   Media Queries

@@ -183,6 +183,10 @@ activitiesSelection.addEventListener('change', function (e) {
 
     }
 
+    //Clears error styling if not activities are selected
+    activitiesSelection.classList.remove('error-blank');
+
+
 });
 
 //Event Listener that toggles the DIVs containiner Paypal and Bitcoin info on and off depend
@@ -205,15 +209,19 @@ paymentSelection.addEventListener('change', function (e) {
         displayToggle('.credit-card', '');
         paymentSelection.children[1].selected = 'true';
     }
+
 });
 
 //Handles submit and validation
 form.addEventListener('submit', function (e) {
     const nameField = document.querySelector('#name')
-    let name = nameField.value;
+    const name = nameField.value;
     const emailField = document.querySelector('#mail');
-    let email = emailField.value;
+    const email = emailField.value;
     const paymentMethod = document.querySelectorAll('#payment > option');
+    const cvv = document.querySelector('#cvv');
+    const creditcard = document.querySelector('#cc-num');
+
 
 
     function validateActivities() {
@@ -226,73 +234,93 @@ form.addEventListener('submit', function (e) {
         }
     }
 
-
     if (name.length === 0) {
-        nameField.style.borderColor = 'red';
-        nameField.style.backgroundColor = '#f75656';
-        nameField['placeholder'] = 'Please enter your name to continue';
-        cursorFocus('#name');
-        nameField.addEventListener('keyup', function (evt) {
-            name = nameField.value;
-            if (name.length > 0) {
-                nameField.style.borderColor = '';
-                nameField.style.backgroundColor = '';
-                nameField.placeholder = '';
-
-            }
-        });
+        nameField.classList.add('error-blank');
+        nameField.placeholder = 'Please enter your name';
         e.preventDefault();
     }
 
     if (email.length === 0) {
-        emailField.style.borderColor = 'red';
-        emailField.style.backgroundColor = '#f75656';
-        emailField['placeholder'] = 'Please enter your email to continue';
-        if (name.length !== 0) {
-            cursorFocus('#mail');
-        }
-        emailField.addEventListener('keyup', function (evt) {
-
-            email = emailField.value;
-            if (email.length > 0) {
-                emailField.style.borderColor = '';
-                emailField.style.backgroundColor = '';
-                emailField.placeholder = '';
-
-            }
-        });
+        emailField.classList.add('error-blank');
+        emailField.placeholder = 'Please enter your email to continue';
         e.preventDefault();
     }
 
     if (!validateActivities()) {
-
-        activitiesSelection.style.border = 'red 2px solid';
-        activitiesSelection.style.backgroundColor = '#f75656';
-
-        activitiesSelection.addEventListener('change', function (evt) {
-            activitiesSelection.style.border = '';
-            activitiesSelection.style.backgroundColor = '';
-        });
+        activitiesSelection.classList.add('error-blank');
         e.preventDefault();
     }
 
     if (paymentMethod[1].selected) {
-        console.log('credit card');
         if (isNaN(zipCodeField.value) || zipCodeField.value.length < 5) {
-            console.log('was wrong zip');
-            cursorFocus('#zip');
+            zipCodeField.classList.add('error-blank');
             e.preventDefault();
         }
+        if (isNaN(cvv.value) || cvv.value.length < 3) {
+            cvv.classList.add('error-blank');
+            e.preventDefault();
+        }
+        if (isNaN(creditcard.value) || creditcard.value.length < 13) {
+            creditcard.classList.add('error-blank');
+            e.preventDefault();
+        }
+
     }
+
+
+
+
 
 });
 
-paymentSelection.addEventListener('keyup', function (e) {
+form.addEventListener('keyup', function (e) {
+    const value = e.target.value;
+    const field = e.target;
+    if (value.length > 0) {
+        field.classList.remove('error-blank');
+        field.placeholder = '';
+    }
+});
+
+
+paymentSelection.addEventListener('input', function (e) {
     let fieldValue = e.target.value;
-    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num') && (e.target['maxLength'] !== fieldValue.length)) {
-        if (isNaN(e.key) || (e.keyCode === 32)) {
-            e.target.value = fieldValue.slice(0, fieldValue.length - 1);
+
+    //Prevents invalid characters from being entered in the credit card payment section.
+    if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
+        const regex = /\D+/g;
+        const isInvalidInput = regex.test(fieldValue);
+        if (isInvalidInput) {
+            const cleanedValue = fieldValue.replace(regex, '');
+            e.target.value = cleanedValue;
         }
     }
+
+    //Credit card length live check
+    if (e.target['id'] === 'cc-num' && fieldValue.length < 13) {
+        console.log('Please enter a 13 to 16 digit credit card number');
+    }
+
+    //Zip code length live check
+    if (e.target['id'] === 'zip' && fieldValue.length < 5) {
+        console.log('Please enter a 5 digit zip code');
+    }
+
+    //CVV code length live check
+    if (e.target['id'] === 'cvv' && fieldValue.length < 3) {
+        console.log('Please enter a 3 digit CVV code');
+    }
+
+
 });
+
+
+
+
+
+
+
+
+
+
 
