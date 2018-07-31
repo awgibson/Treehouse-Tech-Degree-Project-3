@@ -151,17 +151,21 @@ button:hover {
 }
 
 .error-blank,
-.error-blank:focus,
-.tooltip {
+.error-blank:focus {
 	background: #f75656;
 	border-color: red;
 }
 
 .tooltip{
-	display: block;
-	margin-bottom: 1em;
+	margin-bottom: .5em;
 	margin-top: -1em;
-
+	display: none;
+	text-align: center;
+	padding: .4em;
+	color: black;
+	background: yellow;
+	font-weight: bold;
+	border: black dotted 2px;
 }
 
 

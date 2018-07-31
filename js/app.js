@@ -63,17 +63,25 @@ function paymentSectionIntial() {
     ccv.maxLength = '3';
 }
 
+//Places tool tips that will appear with error messages
 function createToolTips() {
-    const allInputs = document.querySelectorAll('INPUT');
+    const afterEmail = document.querySelector('#mail');
     const afterActivities = activitiesSelection.nextElementSibling;
 
-    for (let i = 0; i < allInputs.length; i++) {
-        if (allInputs[i]['type'] === 'text' || allInputs[i]['type'] === 'email') {
-            allInputs[i].insertAdjacentHTML('afterend', '<span class="tooltip">Test</span>');
-        }
-    }
+    afterEmail.insertAdjacentHTML('afterend', '<span class="tooltip"></span>');
+    afterActivities.insertAdjacentHTML('afterend', '<span class="tooltip"></span>');
+}
 
-    afterActivities.insertAdjacentHTML('afterend', '<span class="tooltip">Test</span>');
+function tooltip(message, field, display) {
+    const tooltip = field.nextElementSibling;
+    tooltip.style.display = display;
+    tooltip.innerText = message;
+
+}
+
+function validEmail(email) {
+    const rfc5322Validation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return rfc5322Validation.test(email);
 }
 
 //Actions that take place when the window loads
@@ -199,11 +207,13 @@ activitiesSelection.addEventListener('change', function (e) {
 
     //Clears error styling if not activities are selected
     activitiesSelection.classList.remove('error-blank');
+    tooltip('', activitiesSelection.nextElementSibling, '');
+
 
 
 });
 
-//Event Listener that toggles the DIVs containiner Paypal and Bitcoin info on and off depend
+//Event Listener that toggles the Paypal and Bitcoin info on and off depending
 //on what payment method is selected
 paymentSelection.addEventListener('change', function (e) {
     const paymentSelection = document.querySelector('#payment');
@@ -221,12 +231,12 @@ paymentSelection.addEventListener('change', function (e) {
         displayToggle('.paypal-msg', 'none');
         displayToggle('.bitcoin-msg', 'none');
         displayToggle('.credit-card', '');
-        paymentSelection.children[1].selected = 'true';
+        paymentSelection.children[1].selected = 'true'; //Credit card is set as default even if 'Select Payment Method' is selected
     }
 
 });
 
-//Handles submit and validation
+//Handles validation on submit
 form.addEventListener('submit', function (e) {
     const nameField = document.querySelector('#name')
     const name = nameField.value;
@@ -237,7 +247,7 @@ form.addEventListener('submit', function (e) {
     const creditcard = document.querySelector('#cc-num');
 
 
-
+    //Function to handle checking if at least 1 activity is selected
     function validateActivities() {
         const activities = document.querySelectorAll('.activities > label > input');
         for (let i = 0; i < activities.length; i++) {
@@ -248,59 +258,78 @@ form.addEventListener('submit', function (e) {
         }
     }
 
+    //Checks if name field is blank on submit
     if (name.length === 0) {
         nameField.classList.add('error-blank');
         nameField.placeholder = 'Please enter your name';
         e.preventDefault();
     }
-
+    //Checks if email field is a vaild email address
+    //Error message 1 of 2 for email on submit for exceeds expectations
+    if (!validEmail(emailField.value)) {
+        emailField.classList.add('error-blank');
+        emailField.placeholder = 'Invalid email address';
+        e.preventDefault();
+    }
+    //Checks if email field is blank on submit and provides a different error message
+    //Error message 2 of 2 for email on submit for exceeds expectations
     if (email.length === 0) {
         emailField.classList.add('error-blank');
-        emailField.placeholder = 'Please enter your email to continue';
+        emailField.placeholder = 'Please enter your email';
         e.preventDefault();
     }
-
+    //Checks if activities have at least 1 activity selected
     if (!validateActivities()) {
         activitiesSelection.classList.add('error-blank');
+        tooltip('Please select at least 1 activity', activitiesSelection.nextElementSibling, 'block');
         e.preventDefault();
     }
 
+    //Conditions that are handled if credit card is payment method
     if (paymentMethod[1].selected) {
+        //Checks if zip code is blank or less than 5 digits on submit
         if (isNaN(zipCodeField.value) || zipCodeField.value.length < 5) {
             zipCodeField.classList.add('error-blank');
+            zipCodeField.placeholder = '5 Digits Needed';
             e.preventDefault();
         }
+        //Checks if CVV is blank of less than 3 digits
         if (isNaN(cvv.value) || cvv.value.length < 3) {
             cvv.classList.add('error-blank');
+            cvv.placeholder = '3 Digits Needed';
             e.preventDefault();
         }
+        //Checks if cred card field is blank of less than 13 digits
         if (isNaN(creditcard.value) || creditcard.value.length < 13) {
             creditcard.classList.add('error-blank');
+            creditcard.placeholder = 'Credit card required (13+ digits)';
             e.preventDefault();
         }
 
     }
 
-
-
-
+    //Places cursor focus on first error if it is an input field
+    if (cursorFocus('input.error-blank') !== null) {
+        cursorFocus('input.error-blank');
+    }
 
 });
 
-form.addEventListener('keyup', function (e) {
-    const value = e.target.value;
+
+
+//Event listener to handle live typing
+form.addEventListener('input', function (e) {
     const field = e.target;
-    if (value.length > 0) {
+    const fieldValue = e.target.value;
+
+    //Clears error class from text input fields on keystroke
+    if (fieldValue.length > 0) {
         field.classList.remove('error-blank');
         field.placeholder = '';
     }
-});
-
-
-paymentSelection.addEventListener('input', function (e) {
-    let fieldValue = e.target.value;
 
     //Prevents invalid characters from being entered in the credit card payment section.
+    //I chose to prevent invalid input instead of provide an error message for these fields
     if ((e.target['id'] === 'zip') || (e.target['id'] === 'cvv') || (e.target['id'] === 'cc-num')) {
         const regex = /\D+/g;
         const isInvalidInput = regex.test(fieldValue);
@@ -310,21 +339,20 @@ paymentSelection.addEventListener('input', function (e) {
         }
     }
 
-    //Credit card length live check
-    if (e.target['id'] === 'cc-num' && fieldValue.length < 13) {
-        console.log('Please enter a 13 to 16 digit credit card number');
+    //Email validation live check
+    //2 different error messages are provided below the email field if invalid
+    //Errors appear before submit button is pressed
+    if (e.target['id'] === 'mail' && !validEmail(fieldValue)) {
+        tooltip('Please enter a valid email address', e.target, 'block');
+        console.log('invalid email');
     }
-
-    //Zip code length live check
-    if (e.target['id'] === 'zip' && fieldValue.length < 5) {
-        console.log('Please enter a 5 digit zip code');
+    if (e.target['id'] === 'mail' && fieldValue.length === 0) {
+        console.log('its 0');
+        tooltip('Email cannot be blank', e.target, 'block');
     }
-
-    //CVV code length live check
-    if (e.target['id'] === 'cvv' && fieldValue.length < 3) {
-        console.log('Please enter a 3 digit CVV code');
+    if (e.target['id'] === 'mail' && fieldValue.length !== 0 && validEmail(fieldValue)) {
+        tooltip('', e.target, '');
     }
-
 
 });
 
