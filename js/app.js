@@ -260,6 +260,14 @@ form.addEventListener('submit', function (e) {
         }
     }
 
+    //Function that places cursor focus on first error if it is an input field
+    function focusOnError() {
+        const inputErrors = document.querySelectorAll('input.error-blank').length;
+        if (inputErrors !== 0) {
+            cursorFocus('input.error-blank');
+        }
+    }
+
     //Checks if name field is blank on submit
     if (name.length === 0) {
         nameField.classList.add('error-blank');
@@ -307,14 +315,9 @@ form.addEventListener('submit', function (e) {
             creditcard.placeholder = 'Credit card required (13+ digits)';
             e.preventDefault();
         }
-
     }
 
-    //Places cursor focus on first error if it is an input field
-    if (cursorFocus('input.error-blank') !== null) {
-        cursorFocus('input.error-blank');
-    }
-
+    focusOnError();
 });
 
 
@@ -346,10 +349,8 @@ form.addEventListener('input', function (e) {
     //Errors appear before submit button is pressed
     if (e.target['id'] === 'mail' && !validEmail(fieldValue)) {
         tooltip('Please enter a valid email address', e.target, 'block');
-        console.log('invalid email');
     }
     if (e.target['id'] === 'mail' && fieldValue.length === 0) {
-        console.log('its 0');
         tooltip('Email cannot be blank', e.target, 'block');
     }
     if (e.target['id'] === 'mail' && fieldValue.length !== 0 && validEmail(fieldValue)) {
