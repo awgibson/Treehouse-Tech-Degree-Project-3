@@ -72,6 +72,7 @@ function createToolTips() {
     afterActivities.insertAdjacentHTML('afterend', '<span class="tooltip"></span>');
 }
 
+//Function that will display or disable the tooltip with error message
 function tooltip(message, field, display) {
     const tooltip = field.nextElementSibling;
     tooltip.style.display = display;
@@ -79,6 +80,7 @@ function tooltip(message, field, display) {
 
 }
 
+//Validates email address. I used the RFC 5322 standard validation RegEx after researching online the best way to handle this
 function validEmail(email) {
     const rfc5322Validation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return rfc5322Validation.test(email);
